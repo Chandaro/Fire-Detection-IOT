@@ -6,7 +6,7 @@ from ultralytics import YOLO
 # CONFIG
 # ======================
 ESP32_PORT    = "COM3"
-ESPCAM_STREAM = "http://10.10.49.62:81/stream"
+ESPCAM_STREAM = "http://10.172.23.121:81/stream"
 
 # servo tracking config
 CAM_FOV      = 60   # ESP32-CAM FOV degrees
@@ -124,7 +124,7 @@ def yolo_thread():
             if latest_frame is None:
                 time.sleep(0.01); continue
             frame_copy = latest_frame.copy()
-        results = model(frame_copy, conf=0.4, device="cpu", verbose=False)
+        results = model(frame_copy, conf=0.60, device="cpu", verbose=False)
         boxes   = []
         for r in results:
             for box in r.boxes:
@@ -165,7 +165,7 @@ while True:
     for (x1,y1,x2,y2,label,conf) in boxes:
         x1,y1,x2,y2 = x1*2, y1*2, x2*2, y2*2
 
-        if label.lower() in ["fire","flame"]:
+        if label.lower() in ["fire","flame"] and conf >= 0.3:
             fire_in_frame  = True
             fire_center_x  = (x1 + x2) // 2
 
