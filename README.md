@@ -1,298 +1,219 @@
-# 🔥 YOLO Fire Detection — ESP32-CAM + YOLOv10
+# Fire Detection & Auto-Suppression System
 
-<div align="center">
-
-![Fire Detection Banner](https://img.shields.io/badge/AI-YOLOv10-red?style=for-the-badge&logo=pytorch)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?style=for-the-badge&logo=python)
+![MicroPython](https://img.shields.io/badge/MicroPython-ESP32-orange?style=for-the-badge&logo=espressif)
 ![OpenCV](https://img.shields.io/badge/OpenCV-4.x-green?style=for-the-badge&logo=opencv)
-![IoT](https://img.shields.io/badge/Hardware-ESP32--CAM-orange?style=for-the-badge&logo=espressif)
-![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
+![YOLO](https://img.shields.io/badge/AI-YOLOv8-red?style=for-the-badge)
 
-**Real-time fire detection powered by a custom-trained YOLOv10 model streamed live from an ESP32-CAM over Wi-Fi.**
-
-</div>
+Real-time fire detection using a custom YOLO model streamed from an ESP32-CAM, with automatic servo-aimed water pump suppression controlled via an ESP32 microcontroller.
 
 ---
 
-## 📋 Table of Contents
+## How It Works
 
-- [Overview](#-overview)
-- [How It Works](#-how-it-works)
-- [Project Structure](#-project-structure)
-- [Hardware — ESP32-CAM Setup](#-hardware--esp32-cam-setup)
-- [Software Setup](#-software-setup)
-- [Running the Project](#-running-the-project)
-- [Script Comparison](#-script-comparison-mainpy-vs-newpy)
-- [Configuration](#-configuration)
-- [Troubleshooting](#-troubleshooting)
+```
+┌─────────────┐   MJPEG stream    ┌──────────────────────────┐
+│  ESP32-CAM  │ ────────────────▶ │  Camera.py  (PC)         │
+│  Wi-Fi      │  :81/stream       │  - YOLO fire detection   │
+└─────────────┘                   │  - Servo angle calc      │
+                                  │  - Sends FIRE:XX / CLEAR │
+                                  └────────────┬─────────────┘
+                                               │ Serial (COM3)
+                                               ▼
+                                  ┌──────────────────────────┐
+                                  │  main_local.py  (ESP32)  │
+                                  │  - Servo tracks fire     │
+                                  │  - Water pump relay ON   │
+                                  │  - LED + buzzer alert    │
+                                  │  - LCD status display    │
+                                  │  - MQ-5 gas sensor       │
+                                  └──────────────────────────┘
+```
+
+1. ESP32-CAM streams live video over Wi-Fi
+2. `Camera.py` on the PC runs YOLO detection on each frame
+3. When fire is detected, it calculates servo angle and sends `FIRE:45` via serial
+4. ESP32 receives the command, aims servo at fire, turns on water pump
+5. When fire is gone (after 1.5s hold), `CLEAR` is sent and pump stops
 
 ---
 
-## 🌐 Overview
+## Project Files
 
-This project combines **IoT hardware** (ESP32-CAM) with **AI-powered computer vision** (YOLOv10) to build a real-time fire detection system. The ESP32-CAM captures live video and streams it over a local Wi-Fi network via an HTTP MJPEG server. A Python client on your PC connects to that stream, runs each frame through a custom-trained `fire.pt` model, and draws bounding boxes around any detected fire in real time.
-
-### Key Features
-
-| Feature | Details |
-|---|---|
-| Real-time inference | Frame-by-frame fire detection from live camera stream |
-| Custom YOLO model | `fire.pt` — trained specifically for fire/flame recognition |
-| ESP32-CAM integration | Wireless camera server streamed over local Wi-Fi |
-| Dual inference modes | CPU mode (stable) & GPU/CUDA mode (fast) |
-| Bounding box overlay | Red boxes + green labels drawn directly onto frames |
-| Auto-reconnect | `main.py` automatically retries on stream disconnection |
-
----
-
-## ⚙️ How It Works
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        SYSTEM FLOW                              │
-│                                                                 │
-│  ┌──────────────┐      HTTP MJPEG       ┌─────────────────────┐ │
-│  │  ESP32-CAM   │ ──── Stream ────────▶ │   Python Client     │ │
-│  │              │  192.168.1.11:81      │                     │ │
-│  │  OV2640      │    /stream endpoint   │  urllib / OpenCV    │ │
-│  │  Camera      │                       │        │            │ │
-│  │  Module      │                       │        ▼            │ │
-│  └──────────────┘                       │   YOLOv10 (fire.pt) │ │
-│                                         │        │            │ │
-│                                         │        ▼            │ │
-│                                         │  Bounding Boxes     │ │
-│                                         │  on Live Frame      │ │
-│                                         │        │            │ │
-│                                         │        ▼            │ │
-│                                         │  cv2.imshow()       │ │
-│                                         │  Display Window     │ │
-│                                         └─────────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### Detection Pipeline (step by step)
-
-1. **ESP32-CAM** captures frames and broadcasts an MJPEG stream on `http://<IP>:81/stream`
-2. Python opens the HTTP stream using `urllib.request.urlopen`
-3. Raw bytes are scanned for JPEG markers (`0xFF 0xD8` = start, `0xFF 0xD9` = end)
-4. Each complete JPEG frame is decoded into a NumPy array via `cv2.imdecode`
-5. The frame is passed to the YOLOv10 model (`fire.pt`) for inference
-6. For every detected fire bounding box, a **red rectangle** and a **green label** are drawn
-7. The annotated frame is displayed in a live OpenCV window
-
----
-
-## 📁 Project Structure
-
-```
-YOLO fire detection/
-│
-├── main.py          # Primary script — manual MJPEG parsing, CPU inference, auto-reconnect
-├── new.py           # Alternate script — OpenCV VideoCapture stream, GPU (CUDA) inference
-├── fire.pt          # Custom-trained YOLOv10 weights for fire detection
-└── requires.txt     # Python dependency list
-```
-
----
-
-## 🛠 Hardware — ESP32-CAM Setup
-
-### What You Need
-
-- **ESP32-CAM module** (AI-Thinker variant recommended)
-- **FTDI USB-to-Serial adapter** (for flashing firmware)
-- Jumper wires
-- 5V power supply (the ESP32-CAM needs stable 5V — USB is usually fine)
-
-### Wiring for Flashing
-
-```
-FTDI Adapter     ESP32-CAM
-─────────────    ──────────────
-GND          ──▶ GND
-5V           ──▶ 5V
-TX           ──▶ U0R (GPIO3 / RX)
-RX           ──▶ U0T (GPIO1 / TX)
-GND          ──▶ IO0  ← SHORT this to GND to enter flash mode!
-```
-
-> **Important:** The `IO0` pin must be pulled LOW (connected to GND) **before** powering up to enter bootloader/flash mode. After flashing, remove the IO0–GND jumper and reset the board.
-
-### Flashing the Camera Server Firmware
-
-The ESP32-CAM needs to run an HTTP camera server sketch. Use the **Arduino IDE** or **esptool**:
-
-#### Using Arduino IDE
-
-1. Install **ESP32 board support** via Board Manager:  
-   `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`
-2. Open **File → Examples → ESP32 → Camera → CameraWebServer**
-3. In the sketch, set your Wi-Fi credentials:
-   ```cpp
-   const char* ssid     = "YOUR_WIFI_SSID";
-   const char* password = "YOUR_WIFI_PASSWORD";
-   ```
-4. Select the correct camera model (AI-Thinker):
-   ```cpp
-   #define CAMERA_MODEL_AI_THINKER
-   ```
-5. Select board: **AI Thinker ESP32-CAM**, port: your COM port
-6. Click **Upload** (make sure IO0 is pulled to GND)
-7. After upload: remove IO0–GND jumper, press **Reset**
-
-#### Using esptool (CLI)
-
-`esptool` is included in `requires.txt` for flashing via terminal:
-
-```bash
-esptool.py --chip esp32 --port COM3 --baud 460800 write_flash -z 0x1000 firmware.bin
-```
-
-### Finding the ESP32-CAM IP Address
-
-After booting, the ESP32-CAM connects to Wi-Fi and prints its IP to Serial (115200 baud). Open **Serial Monitor** in Arduino IDE to find it, e.g.:
-
-```
-WiFi connected
-Camera Ready! Use 'http://192.168.1.11' to connect
-Stream available at: http://192.168.1.11:81/stream
-```
-
-> The default stream endpoint used in this project is `http://192.168.1.11:81/stream`
-
----
-
-## 💻 Software Setup
-
-### Prerequisites
-
-- Python 3.8 or higher
-- pip
-- (Optional) NVIDIA GPU + CUDA drivers for GPU-accelerated inference
-
-### Install Dependencies
-
-```bash
-pip install -r requires.txt
-```
-
-**`requires.txt` contents:**
-
-| Package | Purpose |
-|---|---|
-| `opencv-python` | Frame decoding, drawing, display window |
-| `ultralytics` | YOLOv10 inference engine |
-| `esptool` | ESP32-CAM firmware flashing utility |
-| `git+https://github.com/THU-MIG/yolov10.git` | YOLOv10 model architecture |
-
----
-
-## ▶️ Running the Project
-
-### Step 1 — Update the Stream URL
-
-Edit the `url` variable in either script to match your ESP32-CAM's IP address:
-
-**[main.py](main.py) — line 12:**
-```python
-url = "http://192.168.1.11:81/stream"   # ← change IP here
-```
-
-**[new.py](new.py) — line 7:**
-```python
-cap = cv2.VideoCapture("http://192.168.1.11:81/stream")  # ← change IP here
-```
-
-### Step 2 — Run a Script
-
-**CPU mode (recommended for stability):**
-```bash
-python main.py
-```
-
-**GPU/CUDA mode (faster, requires NVIDIA GPU):**
-```bash
-python new.py
-```
-
-### Step 3 — View the Stream
-
-A window titled **"ESP32-CAM Stream"** (or **"Fire Detection"**) will open showing the live camera feed with fire bounding boxes overlaid.
-
-**To quit:** press `Q` in the video window.
-
----
-
-## 🔀 Script Comparison: `main.py` vs `new.py`
-
-| Feature | [main.py](main.py) | [new.py](new.py) |
+| File | Runs on | Purpose |
 |---|---|---|
-| **Stream method** | Manual MJPEG byte parsing via `urllib` | `cv2.VideoCapture` (OpenCV built-in) |
-| **Inference device** | CPU (`device="cpu"`) | CUDA/GPU (`device="cuda"`) |
-| **Confidence threshold** | `0.8` (high precision) | `0.5` (higher recall) |
-| **Auto-reconnect** | Yes — catches exceptions, sleeps 1s, retries | No — exits on stream failure |
-| **Reliability** | High — handles unstable streams | Simpler — best for stable connections |
-| **Speed** | Moderate (CPU-bound) | Fast (GPU-accelerated) |
-
-**When to use which:**
-- Use `main.py` if your Wi-Fi connection to the ESP32-CAM is unstable or for general use.
-- Use `new.py` if you have a GPU and a stable network connection for maximum speed.
+| `Camera.py` | PC | Stream, detect fire, send serial commands |
+| `main_local.py` | ESP32 | Servo, relay/pump, LCD, gas sensor |
+| `main.py` | ESP32 | Same as main_local.py + Telegram alert |
+| `new.py` | PC | Simple detection test (no serial/servo) |
+| `fire.pt` | PC | Custom-trained YOLO fire detection model |
+| `servo_test.py` | ESP32 | Servo calibration utility |
+| `relay_test.py` | ESP32 | Relay/pump test utility |
 
 ---
 
-## ⚙️ Configuration
+## Hardware Required
 
-### Confidence Threshold
+**PC side:**
+- Any PC running Python 3.8+
 
-Controls how certain the model must be before drawing a detection box.
+**ESP32-CAM:**
+- AI-Thinker ESP32-CAM module
+- 5V stable power supply
 
-```python
-# In main.py
-results = model(img, conf=0.8, device="cpu")   # 80% confidence required
+**ESP32 controller:**
+- ESP32 development board
+- Servo motor (connected to GPIO 13)
+- 2× relay module (GPIO 15, GPIO 16) → water pump
+- MQ-5 gas sensor (GPIO 33)
+- I2C LCD 16×2 (SDA GPIO 21, SCL GPIO 22)
+- Green LED (GPIO 18), Yellow LED (GPIO 2), Red LED (GPIO 23)
+- Buzzer (GPIO 4)
 
-# In new.py
-results = model(frame, conf=0.5, device="cuda") # 50% confidence required
-```
+**ESP32 Pin Summary:**
 
-- **Higher value** (e.g. `0.9`) → fewer false positives, may miss small fires
-- **Lower value** (e.g. `0.4`) → detects more, may include false positives
-
-### Model Path
-
-The model is loaded using an absolute path derived from the script's location:
-
-```python
-model = YOLO(f"{os.path.dirname(os.path.abspath(__file__))}/fire.pt")
-```
-
-This ensures the script works regardless of which directory you run it from.
+| Pin | Component |
+|---|---|
+| GPIO 13 | Servo PWM |
+| GPIO 15 | Relay speed |
+| GPIO 16 | Relay pump |
+| GPIO 33 | MQ-5 gas sensor |
+| GPIO 21 | LCD SDA |
+| GPIO 22 | LCD SCL |
+| GPIO 18 | Green LED |
+| GPIO 2  | Yellow LED |
+| GPIO 23 | Red LED |
+| GPIO 4  | Buzzer |
 
 ---
 
-## 🔧 Troubleshooting
+## Software Setup
 
-| Problem | Likely Cause | Fix |
+### PC — Install Python dependencies
+
+```bash
+pip install opencv-python ultralytics pyserial numpy
+```
+
+### ESP32 — Flash MicroPython
+
+1. Download MicroPython firmware for ESP32 from micropython.org
+2. Flash using Thonny or esptool:
+   ```bash
+   esptool.py --chip esp32 --port COM3 erase_flash
+   esptool.py --chip esp32 --port COM3 write_flash -z 0x1000 firmware.bin
+   ```
+3. Upload `main_local.py` (rename to `main.py` on device) using Thonny
+4. Upload `machine_i2c_lcd.py` library to the ESP32
+
+### ESP32-CAM — Flash camera firmware
+
+1. Open Arduino IDE
+2. File → Examples → ESP32 → Camera → CameraWebServer
+3. Set your Wi-Fi credentials and `#define CAMERA_MODEL_AI_THINKER`
+4. Upload, then open Serial Monitor (115200 baud) to get the IP address
+
+---
+
+## Configuration
+
+### Camera.py (PC)
+
+```python
+ESP32_PORT    = "COM3"                         # serial port to ESP32
+ESPCAM_STREAM = "http://10.172.23.121:81/stream"  # ESP32-CAM IP
+
+SERVO_CENTER   = 50     # center angle (calibrate with servo_test.py)
+SERVO_MIN      = 0      # left limit
+SERVO_MAX      = 90     # right limit
+CAM_FOV        = 60     # camera field of view in degrees
+
+CONF_THRESHOLD = 0.3    # min confidence to trigger relay
+FIRE_HOLD      = 1.5    # seconds pump stays on after fire disappears
+SEND_INTERVAL  = 0.3    # seconds between servo update commands
+
+CROSSHAIR_X    = 0      # shift crosshair left(-) / right(+)
+CROSSHAIR_Y    = -50    # shift crosshair up(-) / down(+)
+```
+
+### main_local.py (ESP32)
+
+```python
+GAS_THRESHOLD = 4000    # MQ-5 reading to trigger smoke alert
+SERVO_CENTER  = 45      # confirmed center = duty 51
+```
+
+---
+
+## Running the System
+
+### Step 1 — Upload to ESP32
+
+Open Thonny, connect ESP32, open `main_local.py`:
+- **File → Save as → MicroPython device** → save as `main.py`
+- Reset the ESP32 — it will warm up the gas sensor for 10 seconds then print `READY`
+
+### Step 2 — Update ESP32-CAM IP
+
+Find the current IP from Arduino Serial Monitor, then update `Camera.py`:
+
+```python
+ESPCAM_STREAM = "http://<YOUR_IP>:81/stream"
+```
+
+### Step 3 — Run Camera.py
+
+```bash
+python Camera.py
+```
+
+The window will open showing the live stream with:
+- Green crosshair at center
+- Red bounding box around detected fire
+- Servo angle displayed on detection
+- Status bar at top
+
+**To quit:** press `Q`
+
+---
+
+## System Behavior
+
+| Condition | LEDs | Buzzer | Servo | Pump | LCD |
+|---|---|---|---|---|---|
+| Normal | Green ON | OFF | Center 45° | OFF | SYSTEM SAFE |
+| Gas detected | Yellow ON | Beep | Center 45° | OFF | SMOKE DETECTED |
+| Fire detected | Red ON | ON | Tracks fire | ON | FIRE DETECTED |
+| Fire cleared | Green ON | OFF | Returns 45° | OFF | SYSTEM SAFE |
+
+---
+
+## Servo Calibration
+
+Upload `servo_test.py` to ESP32 and run in Thonny. It sweeps 0°→45°→90° and prints the duty value. Confirmed calibration:
+
+| Angle | Duty | Position |
 |---|---|---|
-| `HTTP Error: 404` | Wrong stream URL path | Try `/` or `:80` instead of `:81/stream` |
-| `Error: timed out` | ESP32-CAM not on network | Check Wi-Fi credentials, reboot ESP32-CAM |
-| `Failed to get frame` | Stream URL unreachable | Verify IP in Serial Monitor output |
-| Black/frozen window | JPEG decode failure | Check ESP32-CAM power supply (needs stable 5V) |
-| `CUDA not available` | No GPU or no CUDA drivers | Use `main.py` (CPU mode) instead |
-| Model not found | Wrong path or missing file | Ensure `fire.pt` is in the same folder as the script |
-| Slow inference | CPU bottleneck | Use `new.py` with a CUDA-capable GPU |
+| 0° | 26 | Full left |
+| 45° | 51 | Center |
+| 90° | 77 | Full right |
+
+Update `SERVO_CENTER` in both `Camera.py` and `main_local.py` if your center differs.
 
 ---
 
-## 📌 Notes
+## Troubleshooting
 
-- The `fire.pt` model is a **custom-trained YOLOv10 model** — it is not a general-purpose YOLO model. It has been specifically trained to detect **fire and flames**.
-- The ESP32-CAM's stream runs on **port 81** by default in the CameraWebServer example (the web UI is on port 80).
-- The MJPEG stream is parsed manually in `main.py` by looking for JPEG byte markers, which is more robust than relying on OpenCV's built-in stream decoder for ESP32-CAM streams.
+| Problem | Fix |
+|---|---|
+| `ERROR: No frame` | ESP32-CAM offline — check IP in Serial Monitor |
+| ESP32 not found | Check `ESP32_PORT` in Camera.py matches Device Manager |
+| Relay not triggering | Check if relay module is active LOW — swap `.on()` / `.off()` |
+| Pump stuttering | Increase `FIRE_HOLD` in Camera.py |
+| LCD shows garbage | Strings > 16 chars — already handled with `.ljust(16)` |
+| Servo not centering | Run `servo_test.py` and update `SERVO_CENTER` |
+| Fire not detected | Lower `CONF_THRESHOLD` in Camera.py |
 
 ---
 
-<div align="center">
-
-Built with Python · OpenCV · YOLOv10 · ESP32-CAM
-
-</div>
+Built with Python · MicroPython · OpenCV · YOLO · ESP32

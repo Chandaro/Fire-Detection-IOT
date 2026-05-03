@@ -1,6 +1,5 @@
 from machine import Pin, ADC, PWM, SoftI2C
-import time, sys, select, network, json
-import urequests
+import time, sys, select
 from machine_i2c_lcd import I2cLcd
 
 # ======================
@@ -27,47 +26,13 @@ lcd = I2cLcd(i2c, 0x27, 2, 16)
 # CONFIG
 # ======================
 GAS_THRESHOLD = 4000
-
-WIFI_SSID  = "POCO F6 Pro"
-WIFI_PASS  = "12345678"    # <-- change this
-BOT_TOKEN  = "7977075771:AAFwBVdM4HopQW8JY4ti1YsXKg5Y_E34I1Y"
-CHAT_ID    = "-5184381589"
-
-SERVO_CENTER = 45
+SERVO_CENTER  = 45
 
 current_state   = ""
 fire_detected   = False
 was_suppressing = False
 fire_angle      = SERVO_CENTER
-fire_alerted    = False
-
-# ======================
-# WIFI + TELEGRAM
-# ======================
-def wifi_connect():
-    wlan = network.WLAN(network.STA_IF)
-    wlan.active(True)
-    if not wlan.isconnected():
-        wlan.connect(WIFI_SSID, WIFI_PASS)
-        for _ in range(20):
-            if wlan.isconnected(): break
-            time.sleep(0.5)
-    if wlan.isconnected():
-        print("WiFi OK: {}".format(wlan.ifconfig()[0]))
-    else:
-        print("WiFi FAILED")
-    return wlan.isconnected()
-
-def tg_send(text):
-    try:
-        url = "https://api.telegram.org/bot{}/sendMessage".format(BOT_TOKEN)
-        r = urequests.post(url,
-            headers={"Content-Type": "application/json"},
-            data=json.dumps({"chat_id": CHAT_ID, "text": text}))
-        r.close()
-        print("TG sent: {}".format(text))
-    except Exception as e:
-        print("TG error: {}".format(e))
+pump_running    = False
 
 # ======================
 # SERVO
@@ -93,16 +58,22 @@ print("BOOT_OK")
 # PUMP HELPERS
 # ======================
 def pump_on():
-    relay_speed.on()
-    time.sleep(0.1)
-    relay_pump.on()
-    print("Pump ON")
+    global pump_running
+    if not pump_running:
+        relay_speed.on()
+        time.sleep(0.1)
+        relay_pump.on()
+        pump_running = True
+        print("Pump ON")
 
 def pump_off():
-    relay_pump.off()
-    time.sleep(0.1)
-    relay_speed.off()
-    print("Pump OFF")
+    global pump_running
+    if pump_running:
+        relay_pump.off()
+        time.sleep(0.1)
+        relay_speed.off()
+        pump_running = False
+        print("Pump OFF")
 
 # ======================
 # LCD UPDATE
@@ -111,9 +82,10 @@ def set_lcd(state, line1, line2=""):
     global current_state
     if state != current_state:
         lcd.clear()
-        lcd.putstr(line1)
+        lcd.move_to(0, 0)
+        lcd.putstr(line1[:16].ljust(16))
         lcd.move_to(0, 1)
-        lcd.putstr(line2)
+        lcd.putstr(line2[:16].ljust(16))
         current_state = state
 
 # ======================
@@ -197,8 +169,6 @@ for i in range(10):
     time.sleep(1)
     print("Warm up: {}/10".format(i + 1))
 
-wifi_ok = wifi_connect()
-
 print("READY")
 lcd.clear()
 lcd.putstr("System Ready!")
@@ -213,15 +183,6 @@ while True:
     gas_value = mq5.read()
     print("GAS:{}|FIRE:{}|ANGLE:{}".format(gas_value, fire_detected, fire_angle))
 
-    # --- Telegram fire alert (send once per event) ---
-    if wifi_ok:
-        if fire_detected and not fire_alerted:
-            tg_send("FIRE detected!")
-            fire_alerted = True
-        elif not fire_detected and fire_alerted:
-            fire_alerted = False
-
-    # --- Priority system ---
     if fire_detected:
         was_suppressing = True
         fire_mode(angle=fire_angle)
