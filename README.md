@@ -80,6 +80,13 @@ The ESP32 applies the following priority logic every cycle:
 - I2C LCD 16×2 (SDA GPIO 21, SCL GPIO 22)
 - Green LED (GPIO 18), Yellow LED (GPIO 2), Red LED (GPIO 23)
 - Buzzer (GPIO 4)
+- Breadboard with shared 5V and GND power rails
+
+**Breadboard Power Rails:**
+| Rail | Source | Purpose |
+|---|---|---|
+| + Rail (Red) | ESP32 5V or 3.3V Pin | Distributes power to all component VCC connections |
+| - Rail (Black) | ESP32 GND Pin | Shared ground connection for all components |
 
 **ESP32 Pin Summary:**
 
