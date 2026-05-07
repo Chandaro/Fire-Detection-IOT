@@ -269,7 +269,7 @@ Full credit for fire.pt goes to the original author. His original code does not 
 
 | Challenge | Description |
 |---|---|
-| **Single-axis tracking only** | The servo only moves left and right (horizontal). The system cannot track fire vertically — if fire appears at the top or bottom of the frame, the nozzle may not aim accurately |
+| **Single-axis tracking only** | The servo only moves left and right (horizontal). The system cannot track fire vertically, if fire appears at the top or bottom of the frame, the nozzle may not aim accurately |
 | **Wi-Fi stream latency** | The MJPEG stream over Wi-Fi introduces delay between real-world fire movement and detection response, which can reduce suppression accuracy |
 | **Dynamic IP address** | The ESP32-CAM gets a new IP from DHCP on every reboot, requiring the user to manually update `ESPCAM_STREAM` in `Camera.py` each session |
 | **MQ-5 sensor warmup** | The gas sensor requires a 10-second warmup on boot before it gives reliable readings — the system is blind to smoke during this window |
@@ -285,7 +285,7 @@ Full credit for fire.pt goes to the original author. His original code does not 
 | Improvement | Description |
 |---|---|
 | **Pan-tilt servo mount (2-axis)** | Add a second servo for vertical movement so the nozzle can track fire anywhere in the frame, not just left and right |
-| **Wi-Fi command channel** | Replace the USB serial link with MQTT or UDP over Wi-Fi so the PC and ESP32 communicate wirelessly — no cable needed |
+| **Wi-Fi command channel** | Replace the USB serial link with MQTT or UDP over Wi-Fi so the PC and ESP32 communicate wirelessly, no cable needed |
 | **Edge inference (no PC)** | Port the YOLO model to run on an ESP32-S3 or Raspberry Pi so the system works fully standalone without a PC |
 | **Static IP for ESP32-CAM** | Assign a fixed IP in the Arduino firmware to avoid having to update the stream URL after every reboot |
 | **Telegram / mobile alerts** | Extend `main.py` (which already has Telegram scaffolding) to send real-time fire photos and alerts to a phone |
