@@ -84,7 +84,7 @@ The system is designed for environments where small fire incidents may occur, su
 The system follows a three-layer workflow that continuously monitors conditions, applies decision logic, and responds automatically when danger is detected.
 
 ## Logic and Decision-Making
-![](https://github.com/Chandaro/IoT_Group_1_Final_Project/blob/60506961051aee70c4ab1d4ff1f15613d6ac9bde/LOGIC%20%26%20DECISION.png)
+![](https://github.com/Chandaro/IoT_Group_1_Final_Project/blob/6a10e9773d0dddd0ab896b59ef6c53e066daee49/LOGIC%20%26%20DECISION.png)
 The ESP32 applies the following priority logic every cycle:
 1. Fire signal receieved? --> FIRE MODE (Highest Priority)
 2. Gas Reading > 3200 --> WARNING MODE
