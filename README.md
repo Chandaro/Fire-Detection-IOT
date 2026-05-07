@@ -10,7 +10,7 @@ Real-time fire detection using a custom YOLO model streamed from an ESP32-CAM, w
 ---
 ## Demo Video
 
-[![Watch the demo](https://img.youtube.com/vi/e7iuw9bi_Rg/maxresdefault.jpg)](https://youtu.be/e7iuw9bi_Rg?feature=shared)
+[![Watch the demo](https://youtu.be/e7iuw9bi_Rg?feature=shared)
 
 ## How It Works
 
