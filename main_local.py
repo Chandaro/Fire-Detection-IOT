@@ -25,7 +25,7 @@ lcd = I2cLcd(i2c, 0x27, 2, 16)
 # ======================
 # CONFIG
 # ======================
-GAS_THRESHOLD = 3400
+GAS_THRESHOLD = 3200
 SERVO_CENTER  = 45
 
 current_state   = ""
