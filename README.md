@@ -1,6 +1,6 @@
 # Fire Detection & Auto-Suppression System
 
-An AI-Powered real-time fire detection and automatic suppression system using a custom YOLO model streamed from an ESP32-CAM, with automatic servo-aimed water pump suppression controlled via an ESP32 microcontroller.
+An AI-powered real-time fire detection and automatic suppression system using a custom YOLO model streamed from an ESP32-CAM, with automatic servo-aimed water pump suppression controlled via an ESP32 microcontroller.
 
 [Watch the Full System Demo](https://youtu.be/e7iuw9bi_Rg?feature=shared)
 
@@ -23,7 +23,7 @@ Once fire is confirmed:
 * The relay activates the water pump
 * Water is sprayed directly at the fire source
 
-The system is designed for environments and small fire occurs such as:
+The system is designed for environments where small fire incidents may occur, such as:
 * Kitchen
 * Laboratories
 * Workshops
