@@ -107,9 +107,16 @@ The ESP32 applies the following priority logic every cycle:
 | Rail | Source | Purpose |
 |---|---|---|
 | + Rail (Red) | ESP32 5V or 3.3V Pin | Distributes power to all component VCC connections |
-| - Rail (Black) | ESP32 GND Pin | Shared ground connection for all components |
+| - Rail (Blue) | ESP32 GND Pin | Shared ground connection for all components |
 
 The breadboard acts as a power bus — the ESP32's power and GND pins are wired once to the + and − rails, and every component draws power from those rails. GPIO pins are used only for data/signal, not for power.
+
+**Power System**
+- External DC power supply (5V)
+- Used to power high-current components such as the DC water pump
+- Ensures stable operation without overloading the ESP32 board
+
+The ESP32 controls the power supply to the pump through a relay module, which acts as a safe electronic switch.
 
 **ESP32 Pin Summary:**
 
