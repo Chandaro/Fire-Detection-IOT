@@ -40,6 +40,9 @@ Real-time fire detection using a custom YOLO model streamed from an ESP32-CAM, w
 
 ---
 
+## System Architecture
+![](https://github.com/Chandaro/IoT_Group_1_Final_Project/blob/ccad3d29a0f60a1fa3fd3175f410d3b855f633b5/SYSTEM%20ARCHITECTURE%20FLOW.png)
+
 ## Project Files
 
 | File | Runs on | Purpose |
