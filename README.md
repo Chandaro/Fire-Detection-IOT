@@ -271,12 +271,12 @@ Update `SERVO_CENTER` in both `Camera.py` and `main_local.py` if your center dif
 ---
 
 ## Model Credit
-The fire detection model (fire.pt) was not trained by us. We directly used the pre-trained YOLOv10 fire detection model provided by the original author. No retraining or fine-tuning was done on our end.
+The fire detection model `(fire.pt)` was not trained by us. We directly used the pre-trained YOLOv10 fire detection model provided by the original author. No retraining or fine-tuning was done on our end.
 
 * Source tutorial: [Fire Detection: YOLOv10 Training with ESP32-Cam Integration](https://www.youtube.com/watch?v=twiS8Xrz8JM)
 * Original model download: [yolov10-firedetection.zip](https://drive.google.com/file/d/1EoMDVYCry3g7Qh3Ibp3wInizeNn0Uz5A/view)
 
-Full credit for fire.pt goes to the original author. His original code does not include any ESP32 integration. Our contribution was building the entire hardware control layer on top of his model, this includes reading the MJPEG stream from the ESP32-CAM, running inference per frame, calculating servo angle from detection coordinates, and sending FIRE:<angle> / CLEAR commands to the ESP32 over serial to control the components.
+Full credit for fire.pt goes to the original author. His original code does not include any ESP32 integration. Our contribution was building the entire hardware control layer on top of his model, this includes reading the MJPEG stream from the ESP32-CAM, running inference per frame, calculating servo angle from detection coordinates, and sending `FIRE:<angle> / CLEAR` commands to the ESP32 over serial to control the components.
 
 ## Troubleshooting
 
