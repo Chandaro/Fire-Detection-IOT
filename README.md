@@ -188,20 +188,20 @@ pip install opencv-python ultralytics pyserial numpy
 ### Camera.py (PC)
 
 ```python
-ESP32_PORT    = "COM3"  # serial port to ESP32
+ESP32_PORT = "COM3"  # serial port to ESP32
 ESPCAM_STREAM = "http://10.172.23.121:81/stream"  # ESP32-CAM IP
 
-SERVO_CENTER   = 50     # center angle (calibrate with servo_test.py)
-SERVO_MIN      = 0      # left limit
-SERVO_MAX      = 90     # right limit
-CAM_FOV        = 60     # camera field of view in degrees
+SERVO_CENTER = 50  # center angle (calibrate with servo_test.py)
+SERVO_MIN = 0      # left limit
+SERVO_MAX = 90     # right limit
+CAM_FOV = 60       # camera field of view in degrees
 
-CONF_THRESHOLD = 0.3    # min confidence to trigger relay
-FIRE_HOLD      = 1.5    # seconds pump stays on after fire disappears
-SEND_INTERVAL  = 0.3    # seconds between servo update commands
+CONF_THRESHOLD = 0.3   # min confidence to trigger relay
+FIRE_HOLD = 1.5        # seconds pump stays on after fire disappears
+SEND_INTERVAL = 0.3    # seconds between servo update commands
 
-CROSSHAIR_X    = 0      # shift crosshair left(-) / right(+)
-CROSSHAIR_Y    = -50    # shift crosshair up(-) / down(+)
+CROSSHAIR_X = 0     # shift crosshair left(-) / right(+)
+CROSSHAIR_Y = -50   # shift crosshair up(-) / down(+)
 ```
 
 ### main_local.py (ESP32)
