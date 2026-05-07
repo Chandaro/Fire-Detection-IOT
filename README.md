@@ -161,7 +161,7 @@ pip install opencv-python ultralytics pyserial numpy
 ### Camera.py (PC)
 
 ```python
-ESP32_PORT    = "COM3"                         # serial port to ESP32
+ESP32_PORT    = "COM3"  # serial port to ESP32
 ESPCAM_STREAM = "http://10.172.23.121:81/stream"  # ESP32-CAM IP
 
 SERVO_CENTER   = 50     # center angle (calibrate with servo_test.py)
@@ -180,7 +180,7 @@ CROSSHAIR_Y    = -50    # shift crosshair up(-) / down(+)
 ### main_local.py (ESP32)
 
 ```python
-GAS_THRESHOLD = 4000    # MQ-5 reading to trigger smoke alert
+GAS_THRESHOLD = 3200    # MQ-5 reading to trigger smoke alert
 SERVO_CENTER  = 45      # confirmed center = duty 51
 ```
 
