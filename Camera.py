@@ -10,7 +10,7 @@ ESPCAM_STREAM = "http://10.172.23.121:81/stream"
 
 # servo tracking config
 CAM_FOV      = 60   # ESP32-CAM FOV degrees
-SERVO_CENTER = 50   # center angle matching camera FOV center
+SERVO_CENTER = 45   # center angle matching camera FOV center
 SERVO_MIN    = 0    # servo left limit
 SERVO_MAX    = 90   # servo right limit
 
@@ -19,7 +19,7 @@ CROSSHAIR_X  = 0
 CROSSHAIR_Y  = -50
 
 # detection tuning
-CONF_THRESHOLD = 0.3    # minimum confidence to trigger relay
+CONF_THRESHOLD = 0.6    # minimum confidence to trigger relay
 CONFIRM_FRAMES = 1      # frames needed to confirm fire
 FIRE_HOLD      = 1.5    # seconds to keep pump ON after fire disappears
 SEND_INTERVAL  = 0.3    # seconds between repeated FIRE commands

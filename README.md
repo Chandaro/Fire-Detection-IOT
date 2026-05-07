@@ -216,4 +216,36 @@ Update `SERVO_CENTER` in both `Camera.py` and `main_local.py` if your center dif
 
 ---
 
+## Challenges
+
+| Challenge | Description |
+|---|---|
+| **Single-axis tracking only** | The servo only moves left and right (horizontal). The system cannot track fire vertically — if fire appears at the top or bottom of the frame, the nozzle may not aim accurately |
+| **Wi-Fi stream latency** | The MJPEG stream over Wi-Fi introduces delay between real-world fire movement and detection response, which can reduce suppression accuracy |
+| **Dynamic IP address** | The ESP32-CAM gets a new IP from DHCP on every reboot, requiring the user to manually update `ESPCAM_STREAM` in `Camera.py` each session |
+| **MQ-5 sensor warmup** | The gas sensor requires a 10-second warmup on boot before it gives reliable readings — the system is blind to smoke during this window |
+| **False positives** | The YOLO model can misdetect bright light sources (sunlight, reflections, lamps) as fire, triggering the pump unnecessarily |
+| **PC dependency** | YOLO inference runs on the PC — the system cannot operate standalone without a connected computer running `Camera.py` |
+| **Power stability** | Running the pump relay, servo, and ESP32 simultaneously puts high demand on the power supply; unstable power causes resets or erratic behavior |
+| **Serial cable required** | Commands are sent from PC to ESP32 over USB serial, which limits deployment distance and adds a physical cable constraint |
+
+---
+
+## Future Improvements
+
+| Improvement | Description |
+|---|---|
+| **Pan-tilt servo mount (2-axis)** | Add a second servo for vertical movement so the nozzle can track fire anywhere in the frame, not just left and right |
+| **Wi-Fi command channel** | Replace the USB serial link with MQTT or UDP over Wi-Fi so the PC and ESP32 communicate wirelessly — no cable needed |
+| **Edge inference (no PC)** | Port the YOLO model to run on an ESP32-S3 or Raspberry Pi so the system works fully standalone without a PC |
+| **Static IP for ESP32-CAM** | Assign a fixed IP in the Arduino firmware to avoid having to update the stream URL after every reboot |
+| **Telegram / mobile alerts** | Extend `main.py` (which already has Telegram scaffolding) to send real-time fire photos and alerts to a phone |
+| **Water level monitoring** | Add a float sensor to the water tank and display the level on the LCD — stop the pump automatically when the tank is empty |
+| **Temperature sensor** | Integrate a DHT22 or thermocouple for ambient temperature logging alongside gas and visual detection |
+| **Cloud dashboard** | Log detection events, timestamps, and sensor readings to a cloud service (e.g., ThingSpeak, Firebase) for remote monitoring |
+| **Multiple camera support** | Support more than one ESP32-CAM to cover wider areas, with `Camera.py` aggregating feeds |
+| **Model retraining pipeline** | Build a simple pipeline to collect false-positive frames and retrain the YOLO model to reduce misdetections over time |
+
+---
+
 Built with Python · MicroPython · OpenCV · YOLO · ESP32

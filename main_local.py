@@ -25,7 +25,7 @@ lcd = I2cLcd(i2c, 0x27, 2, 16)
 # ======================
 # CONFIG
 # ======================
-GAS_THRESHOLD = 4000
+GAS_THRESHOLD = 3400
 SERVO_CENTER  = 45
 
 current_state   = ""
@@ -83,9 +83,9 @@ def set_lcd(state, line1, line2=""):
     if state != current_state:
         lcd.clear()
         lcd.move_to(0, 0)
-        lcd.putstr(line1[:16].ljust(16))
+        lcd.putstr("{:<16}".format(line1[:16]))
         lcd.move_to(0, 1)
-        lcd.putstr(line2[:16].ljust(16))
+        lcd.putstr("{:<16}".format(line2[:16]))
         current_state = state
 
 # ======================
