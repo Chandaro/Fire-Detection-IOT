@@ -5,10 +5,8 @@
 ![OpenCV](https://img.shields.io/badge/OpenCV-4.x-green?style=for-the-badge&logo=opencv)
 ![YOLO](https://img.shields.io/badge/AI-YOLOv10-red?style=for-the-badge)
 
-Real-time fire detection using a custom YOLO model streamed from an ESP32-CAM, with automatic servo-aimed water pump suppression controlled via an ESP32 microcontroller.
+An AI-Powered real-time fire detection and automatic suppression system using a custom YOLO model streamed from an ESP32-CAM, with automatic servo-aimed water pump suppression controlled via an ESP32 microcontroller.
 
----
-## Demo Video
 [Watch the Full System Demo](https://youtu.be/e7iuw9bi_Rg?feature=shared)
 
 ## How It Works
@@ -41,10 +39,15 @@ Real-time fire detection using a custom YOLO model streamed from an ESP32-CAM, w
 ---
 
 ## System Architecture
+The system follows a three-layer workflow that continuously monitors conditions, applies decision logic, and responds automatically when danger is detected.
 ![](https://github.com/Chandaro/IoT_Group_1_Final_Project/blob/ccad3d29a0f60a1fa3fd3175f410d3b855f633b5/SYSTEM%20ARCHITECTURE%20FLOW.png)
 
 ## Logic and Decision-Making
 ![](https://github.com/Chandaro/IoT_Group_1_Final_Project/blob/60506961051aee70c4ab1d4ff1f15613d6ac9bde/LOGIC%20%26%20DECISION.png)
+The ESP32 applies the following priority logic every cycle:
+1. Fire signal receieved? --> FIRE MODE (Highest Priority)
+2. Gas Reading > 3200 --> WARNING MODE
+3. Neither --> SAFE MODE
 
 ## Project Files
 
