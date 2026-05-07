@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?style=for-the-badge&logo=python)
 ![MicroPython](https://img.shields.io/badge/MicroPython-ESP32-orange?style=for-the-badge&logo=espressif)
 ![OpenCV](https://img.shields.io/badge/OpenCV-4.x-green?style=for-the-badge&logo=opencv)
-![YOLO](https://img.shields.io/badge/AI-YOLOv8-red?style=for-the-badge)
+![YOLO](https://img.shields.io/badge/AI-YOLOv10-red?style=for-the-badge)
 
 Real-time fire detection using a custom YOLO model streamed from an ESP32-CAM, with automatic servo-aimed water pump suppression controlled via an ESP32 microcontroller.
 
