@@ -87,7 +87,7 @@ The system follows a three-layer workflow that continuously monitors conditions,
 ![](https://github.com/Chandaro/IoT_Group_1_Final_Project/blob/6a10e9773d0dddd0ab896b59ef6c53e066daee49/LOGIC%20%26%20DECISION.png)
 The ESP32 applies the following priority logic every cycle:
 1. Fire signal receieved? --> FIRE MODE (Highest Priority)
-2. Gas Reading > 3200 --> WARNING MODE
+2. Gas Reading >= 3200 --> WARNING MODE
 3. Neither --> SAFE MODE
 
 ## Project Files
