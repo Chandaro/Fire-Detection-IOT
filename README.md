@@ -78,7 +78,7 @@ The ESP32 applies the following priority logic every cycle:
 | `main_local.py` | ESP32 | Servo, relay/pump, LCD, gas sensor |
 | `main.py` | ESP32 | Same as main_local.py + Telegram alert |
 | `new.py` | PC | Simple detection test (no serial/servo) |
-| `fire.pt` | PC | Custom-trained YOLO fire detection model |
+| `fire.pt` | PC | Pre-trained YOLOv10 fire detection model (see Model Credit)|
 | `servo_test.py` | ESP32 | Servo calibration utility |
 | `relay_test.py` | ESP32 | Relay/pump test utility |
 
@@ -244,7 +244,7 @@ Update `SERVO_CENTER` in both `Camera.py` and `main_local.py` if your center dif
 ---
 
 ## Model Credit
-The fire detection model (fire.pt) was no trained by us. We directly used the pre-trained YOLOv10 fire detection model provided by the original author. No retraining or fine-tuning was done on our end.
+The fire detection model (fire.pt) was not trained by us. We directly used the pre-trained YOLOv10 fire detection model provided by the original author. No retraining or fine-tuning was done on our end.
 
 * Source tutorial: [Fire Detection: YOLOv10 Training with ESP32-Cam Integration](https://www.youtube.com/watch?v=twiS8Xrz8JM)
 * Original model download: [yolov10-firedetection.zip](https://drive.google.com/file/d/1EoMDVYCry3g7Qh3Ibp3wInizeNn0Uz5A/view)
