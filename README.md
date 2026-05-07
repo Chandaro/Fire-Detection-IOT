@@ -1,13 +1,32 @@
 # Fire Detection & Auto-Suppression System
 
-![Python](https://img.shields.io/badge/Python-3.8+-blue?style=for-the-badge&logo=python)
-![MicroPython](https://img.shields.io/badge/MicroPython-ESP32-orange?style=for-the-badge&logo=espressif)
-![OpenCV](https://img.shields.io/badge/OpenCV-4.x-green?style=for-the-badge&logo=opencv)
-![YOLO](https://img.shields.io/badge/AI-YOLOv10-red?style=for-the-badge)
-
 An AI-Powered real-time fire detection and automatic suppression system using a custom YOLO model streamed from an ESP32-CAM, with automatic servo-aimed water pump suppression controlled via an ESP32 microcontroller.
 
 [Watch the Full System Demo](https://youtu.be/e7iuw9bi_Rg?feature=shared)
+
+## Project Overview 
+This project combines:
+* Computer Vision (YOLO Fire Detection)
+* Embedded Systems (ESP32 + ESP32-CAM)
+* Environmental Sensing (MQ-5 Gas Sensor)
+* Automatic Fire Suppression
+
+The system continuously monitors for:
+* Visible flames using AI-based fire detection
+* Flammable gas using the MQ-5 gas sensor
+
+Once fire is confirmed:
+* The alarm activates
+* The servo rotates toward the fire
+* The relay activates the water pump
+* Water is sprayed directly at the fire source
+
+The system is designed for environments and small fire occurs such as:
+* Kitchen
+* Laboratories
+* Workshops
+* Small indoor spaces
+
 
 ## How It Works
 
@@ -87,6 +106,8 @@ The ESP32 applies the following priority logic every cycle:
 |---|---|---|
 | + Rail (Red) | ESP32 5V or 3.3V Pin | Distributes power to all component VCC connections |
 | - Rail (Black) | ESP32 GND Pin | Shared ground connection for all components |
+
+The breadboard acts as a power bus — the ESP32's power and GND pins are wired once to the + and − rails, and every component draws power from those rails. GPIO pins are used only for data/signal, not for power.
 
 **ESP32 Pin Summary:**
 
@@ -219,6 +240,14 @@ Upload `servo_test.py` to ESP32 and run in Thonny. It sweeps 0°→45°→90° a
 Update `SERVO_CENTER` in both `Camera.py` and `main_local.py` if your center differs.
 
 ---
+
+## Model Credit
+The fire detection model (fire.pt) was no trained by us. We directly used the pre-trained YOLOv10 fire detection model provided by the original author. No retraining or fine-tuning was done on our end.
+
+* Source tutorial: ![Fire Detection: YOLOv10 Training with ESP32-Cam Integration](https://www.youtube.com/watch?v=twiS8Xrz8JM)
+* Original model download: ![yolov10-firedetection.zip](https://drive.google.com/file/d/1EoMDVYCry3g7Qh3Ibp3wInizeNn0Uz5A/view)
+
+Full credit for fire.pt goes to the original author. His original code does not include any ESP32 integration. Our contribution was building the entire hardware control layer on top of his model, this includes reading the MJPEG stream from the ESP32-CAM, running inference per frame, calculating servo angle from detection coordinates, and sending FIRE:<angle> / CLEAR commands to the ESP32 over serial to control the components.
 
 ## Troubleshooting
 
