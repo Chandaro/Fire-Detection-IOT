@@ -8,6 +8,9 @@
 Real-time fire detection using a custom YOLO model streamed from an ESP32-CAM, with automatic servo-aimed water pump suppression controlled via an ESP32 microcontroller.
 
 ---
+## Demo Video
+
+[![Watch the demo](https://img.youtube.com/vi/e7iuw9bi_Rg/maxresdefault.jpg)](https://youtu.be/e7iuw9bi_Rg?feature=shared)
 
 ## How It Works
 
