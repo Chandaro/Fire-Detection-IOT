@@ -6,6 +6,26 @@ An AI-powered real-time fire detection and automatic suppression system using a 
 
 [View Presentation Slides](https://canva.link/hh019dn70b67avy)
 
+## Table of Content
+- [Project Overview](#project-overview)
+- [How It Works](#how-it-works)
+- [System Architecture](#system-architecture)
+- [Logic & Decision-Making](#logic--decision-making)
+- [Project Files](#project-files)
+- [Hardware Required](#hardware-required)
+- [Breadboard Power System](#breadboard-power-system)
+- [External Power System](#external-power-system)
+- [ESP32 Pin Mapping](#esp32-pin-mapping)
+- [Software Setup](#software-setup)
+- [Configuration](#configuration)
+- [Running the System](#running-the-system)
+- [System Behavior](#system-behavior)
+- [Servo Calibration](#servo-calibration)
+- [Model Credit](#model-credit)
+- [Troubleshooting](#troubleshooting)
+- [Challenges](#challenges)
+- [Future Improvements](#future-improvements)
+
 ## Project Overview 
 This project combines:
 * Computer Vision (YOLO Fire Detection)
