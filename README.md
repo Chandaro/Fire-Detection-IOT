@@ -4,7 +4,7 @@ An AI-powered real-time fire detection and automatic suppression system using a 
 
 [Watch the Full System Demo](https://youtu.be/e7iuw9bi_Rg?feature=shared)
 
-[![Watch Demo](ChatGPT Image Jun 23, 2026, 11_02_59 PM.png)](https://youtu.be/e7iuw9bi_Rg?feature=shared)
+[![Watch Demo](pic.png)](https://youtu.be/e7iuw9bi_Rg?feature=shared)
 
 [View Presentation Slides](https://canva.link/hh019dn70b67avy)
 
