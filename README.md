@@ -4,9 +4,7 @@ An AI-powered real-time fire detection and automatic suppression system using a 
 
 [Watch the Full System Demo](https://youtu.be/e7iuw9bi_Rg?feature=shared)
 
-<video width="800" controls>
-  <source src="./assets/fire_demo.mp4" type="video/mp4">
-</video>
+[![Watch Demo](thumbnail.png)](https://youtu.be/e7iuw9bi_Rg?feature=shared)
 
 [View Presentation Slides](https://canva.link/hh019dn70b67avy)
 
