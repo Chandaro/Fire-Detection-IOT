@@ -243,7 +243,7 @@ The window will open showing the live stream with:
 - Servo angle displayed on detection
 - Status bar at top
 
-**To quit:** press `Q
+**To quit:** press `Q`
 
 ---
 
