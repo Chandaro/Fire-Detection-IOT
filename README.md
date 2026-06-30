@@ -1,4 +1,4 @@
-# Fire Detection & Auto-Suppression Syste
+# Fire Detection & Auto-Suppression System
 
 An AI-powered real-time fire detection and automatic suppression system using a custom YOLO model streamed from an ESP32-CAM, with automatic servo-aimed water pump suppression controlled via an ESP32 microcontroller.
 
